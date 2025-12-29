@@ -1,59 +1,65 @@
-<h1 style="color:red">TEST PAGE</h1>
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#0f172a">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>ماكينة الحظ المخصصة</title>
-    <link rel="manifest" href="manifest.json">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Cairo', sans-serif;
-            background-color: #0f172a;
-            color: #f8fafc;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-        }
-        .slot-gradient {
-            background: linear-gradient(180deg, rgba(30,41,59,0) 0%, rgba(30,41,59,1) 50%, rgba(30,41,59,0) 100%);
-        }
-        /* تحسين مظهر السكرول بار للموبايل */
-        ::-webkit-scrollbar {
-            width: 4px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #334155;
-            border-radius: 10px;
-        }
-    </style>
-    <script type="importmap">
-    {
-      "imports": {
-        "react/": "https://esm.sh/react@^19.2.3/",
-        "react": "https://esm.sh/react@^19.2.3",
-        "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
-        "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
-      }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0f172a">
+  <title>ماكينة الحظ المخصصة</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Cairo', sans-serif;
+      background-color: #0f172a;
+      color: #f8fafc;
     }
-    </script>
-<link rel="stylesheet" href="/index.css">
+  </style>
 </head>
-<body>
-    <div id="root"></div>
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('SW Registered'))
-                    .catch(err => console.log('SW Reg Error', err));
-            });
-        }
-    </script>
-<script type="module" src="/index.tsx"></script>
+
+<body class="min-h-screen flex items-center justify-center p-4">
+
+  <div class="w-full max-w-md bg-slate-800 rounded-xl p-6 shadow-xl">
+    <h1 class="text-2xl font-bold text-center mb-6">🎰 ماكينة الحظ</h1>
+
+    <textarea id="list1" class="w-full mb-3 p-2 rounded text-black" placeholder="القائمة الأولى (كل كلمة في سطر)"></textarea>
+    <textarea id="list2" class="w-full mb-3 p-2 rounded text-black" placeholder="القائمة الثانية"></textarea>
+    <textarea id="list3" class="w-full mb-3 p-2 rounded text-black" placeholder="القائمة الثالثة"></textarea>
+    <textarea id="list4" class="w-full mb-4 p-2 rounded text-black" placeholder="القائمة الرابعة"></textarea>
+
+    <button onclick="spin()" class="w-full bg-blue-600 hover:bg-blue-700 py-2 rounded font-bold">
+      🎲 لفّ الماكينة
+    </button>
+
+    <div id="result" class="mt-6 text-center text-xl font-semibold"></div>
+  </div>
+
+  <script>
+    function pickRandom(text) {
+      const items = text.split('\n').map(x => x.trim()).filter(Boolean);
+      if (items.length === 0) return '—';
+      return items[Math.floor(Math.random() * items.length)];
+    }
+
+    function spin() {
+      const r1 = pickRandom(document.getElementById('list1').value);
+      const r2 = pickRandom(document.getElementById('list2').value);
+      const r3 = pickRandom(document.getElementById('list3').value);
+      const r4 = pickRandom(document.getElementById('list4').value);
+
+      document.getElementById('result').innerHTML =
+        `<div class="space-y-1">
+          <div>${r1}</div>
+          <div>${r2}</div>
+          <div>${r3}</div>
+          <div>${r4}</div>
+        </div>`;
+    }
+  </script>
+
 </body>
 </html>
