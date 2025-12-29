@@ -45,20 +45,25 @@
       return items[Math.floor(Math.random() * items.length)];
     }
 
-    function spin() {
-      const r1 = pickRandom(document.getElementById('list1').value);
-      const r2 = pickRandom(document.getElementById('list2').value);
-      const r3 = pickRandom(document.getElementById('list3').value);
-      const r4 = pickRandom(document.getElementById('list4').value);
+function spin() {
+  const resultBox = document.getElementById('result');
+  resultBox.innerHTML = '🎰 جاري اللف...';
 
-      document.getElementById('result').innerHTML =
-        `<div class="space-y-1">
-          <div>${r1}</div>
-          <div>${r2}</div>
-          <div>${r3}</div>
-          <div>${r4}</div>
-        </div>`;
-    }
+  setTimeout(() => {
+    const r1 = pickRandom(document.getElementById('list1').value);
+    const r2 = pickRandom(document.getElementById('list2').value);
+    const r3 = pickRandom(document.getElementById('list3').value);
+    const r4 = pickRandom(document.getElementById('list4').value);
+
+    resultBox.innerHTML = `
+      <div class="space-y-1">
+        <div>${r1}</div>
+        <div>${r2}</div>
+        <div>${r3}</div>
+        <div>${r4}</div>
+      </div>`;
+  }, 1500);
+}
   </script>
 
 </body>
