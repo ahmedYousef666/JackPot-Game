@@ -23,20 +23,12 @@
 
 <body class="min-h-screen flex items-center justify-center p-4">
 
-  <div class="w-full max-w-md bg-slate-800 rounded-xl p-6 shadow-xl">
-    <h1 class="text-2xl font-bold text-center mb-6">🎰 ماكينة الحظ</h1>
-
-    <textarea id="list1" class="w-full mb-3 p-2 rounded text-black" placeholder="القائمة الأولى (كل كلمة في سطر)"></textarea>
-    <textarea id="list2" class="w-full mb-3 p-2 rounded text-black" placeholder="القائمة الثانية"></textarea>
-    <textarea id="list3" class="w-full mb-3 p-2 rounded text-black" placeholder="القائمة الثالثة"></textarea>
-    <textarea id="list4" class="w-full mb-4 p-2 rounded text-black" placeholder="القائمة الرابعة"></textarea>
-
-    <button onclick="spin()" class="w-full bg-blue-600 hover:bg-blue-700 py-2 rounded font-bold">
-      🎲 لفّ الماكينة
-    </button>
-
-    <div id="result" class="mt-6 text-center text-xl font-semibold"></div>
-  </div>
+ <div id="result" class="mt-6 grid grid-cols-1 gap-2 text-center text-xl font-bold">
+  <div class="slot" id="r1">—</div>
+  <div class="slot" id="r2">—</div>
+  <div class="slot" id="r3">—</div>
+  <div class="slot" id="r4">—</div>
+</div>
 
   <script>
     function pickRandom(text) {
@@ -46,8 +38,40 @@
     }
 
 function spin() {
-  const resultBox = document.getElementById('result');
-  resultBox.innerHTML = '🎰 جاري اللف...';
+  const lists = [
+    document.getElementById('list1').value,
+    document.getElementById('list2').value,
+    document.getElementById('list3').value,
+    document.getElementById('list4').value
+  ];
+
+  const resultEls = [
+    document.getElementById('r1'),
+    document.getElementById('r2'),
+    document.getElementById('r3'),
+    document.getElementById('r4')
+  ];
+
+  resultEls.forEach((el, index) => {
+    let spins = 0;
+    const items = lists[index].split('\n').map(x => x.trim()).filter(Boolean);
+    if (items.length === 0) {
+      el.textContent = '—';
+      return;
+    }
+
+    const interval = setInterval(() => {
+      el.textContent = items[Math.floor(Math.random() * items.length)];
+      spins++;
+    }, 100);
+
+    setTimeout(() => {
+      clearInterval(interval);
+      el.textContent = items[Math.floor(Math.random() * items.length)];
+    }, 1200 + index * 300); // كل خانة تقف بعد اللي قبلها
+  });
+}
+
 
   setTimeout(() => {
     const r1 = pickRandom(document.getElementById('list1').value);
@@ -65,6 +89,15 @@ function spin() {
   }, 1500);
 }
   </script>
+const ids = ['list1','list2','list3','list4'];
+
+ids.forEach(id => {
+  const el = document.getElementById(id);
+  el.value = localStorage.getItem(id) || '';
+  el.addEventListener('input', () => {
+    localStorage.setItem(id, el.value);
+  });
+});
 
 </body>
 </html>
