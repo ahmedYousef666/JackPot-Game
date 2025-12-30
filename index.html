@@ -22,13 +22,30 @@
       color: #f8fafc;
     }
 
+    /* شكل خانة النتيجة (Reel) */
     .slot {
-      background: #020617;
-      padding: 12px;
-      border-radius: 12px;
-      border: 2px solid #1e293b;
-      box-shadow: inset 0 0 10px rgba(0,0,0,.6);
-      min-height: 48px;
+      background: linear-gradient(180deg, #020617, #020617);
+      padding: 14px;
+      border-radius: 10px;
+      border: 3px solid #1e293b;
+      box-shadow:
+        inset 0 4px 6px rgba(255,255,255,0.05),
+        inset 0 -4px 6px rgba(0,0,0,0.8),
+        0 6px 15px rgba(0,0,0,0.6);
+      min-width: 90px;
+      min-height: 65px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-size: 1.1rem;
+      transition: transform 0.15s ease;
+    }
+
+    .slot.final {
+      transform: scale(1.05);
+      border-color: #38bdf8;
     }
   </style>
 </head>
@@ -50,7 +67,7 @@
       </button>
     </div>
 
-    <!-- الأزرار -->
+    <!-- زر التشغيل -->
     <button onclick="spin()" class="w-full mt-4 bg-blue-600 hover:bg-blue-700 py-2 rounded font-bold">
       🎲 لفّ الماكينة
     </button>
@@ -59,8 +76,14 @@
       ♻️ مسح كل القوائم
     </button>
 
-    <!-- النتائج -->
-    <div id="result" class="mt-6 grid gap-2 text-center text-xl font-bold"></div>
+    <!-- إطار الماكينة -->
+    <div class="mt-6 p-3 rounded-xl bg-slate-900 border-4 border-slate-700">
+      <div
+        id="result"
+        class="grid gap-2 text-center font-bold"
+        style="grid-auto-flow: column; grid-auto-columns: 1fr;"
+      ></div>
+    </div>
   </div>
 
 <script>
@@ -76,7 +99,6 @@ function createList(value = '') {
   textarea.className = 'w-full p-2 rounded text-black';
   textarea.placeholder = `القائمة رقم ${listsCount} (كل عنصر في سطر)`;
   textarea.value = value;
-
   textarea.addEventListener('input', saveLists);
   listsContainer.appendChild(textarea);
 }
@@ -108,7 +130,7 @@ function loadLists() {
 }
 
 /* =======================
-   الأنيميشن + السحب
+   اللف (Slot Effect)
 ======================= */
 function spin() {
   const textareas = [...listsContainer.children];
@@ -116,21 +138,22 @@ function spin() {
   resultBox.innerHTML = '';
 
   textareas.forEach((ta, index) => {
-    const div = document.createElement('div');
-    div.className = 'slot';
-    div.textContent = '—';
-    resultBox.appendChild(div);
+    const slot = document.createElement('div');
+    slot.className = 'slot';
+    slot.textContent = '—';
+    resultBox.appendChild(slot);
 
     const items = ta.value.split('\n').map(x => x.trim()).filter(Boolean);
     if (items.length === 0) return;
 
     const interval = setInterval(() => {
-      div.textContent = items[Math.floor(Math.random() * items.length)];
+      slot.textContent = items[Math.floor(Math.random() * items.length)];
     }, 100);
 
     setTimeout(() => {
       clearInterval(interval);
-      div.textContent = items[Math.floor(Math.random() * items.length)];
+      slot.textContent = items[Math.floor(Math.random() * items.length)];
+      slot.classList.add('final');
     }, 1200 + index * 300);
   });
 }
