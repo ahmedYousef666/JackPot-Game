@@ -6,13 +6,7 @@
   <meta name="theme-color" content="#0f172a">
   <title>ماكينة الحظ المخصصة</title>
 
-  <!-- PWA -->
-  <link rel="manifest" href="manifest.json">
-
-  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Font -->
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
 
   <style>
@@ -22,85 +16,87 @@
       color: #f8fafc;
     }
 
-    /* شكل خانة النتيجة (Reel) */
+    /* خانة النتيجة */
     .slot {
       background: linear-gradient(180deg, #020617, #020617);
-      padding: 14px;
-      border-radius: 10px;
       border: 3px solid #1e293b;
+      border-radius: 10px;
       box-shadow:
         inset 0 4px 6px rgba(255,255,255,0.05),
         inset 0 -4px 6px rgba(0,0,0,0.8),
         0 6px 15px rgba(0,0,0,0.6);
-      min-width: 90px;
-      min-height: 65px;
+
+      width: 90px;
+      height: 65px;
 
       display: flex;
       align-items: center;
       justify-content: center;
 
       font-size: 1.1rem;
-      transition: transform 0.15s ease;
+      font-weight: bold;
+      flex-shrink: 0;
     }
 
-    .slot.final {
-      transform: scale(1.05);
-      border-color: #38bdf8;
+    .machine-frame {
+      background: #020617;
+      border: 4px solid #475569;
+      border-radius: 14px;
+      padding: 12px;
+      overflow-x: auto;
+    }
+
+    .reels {
+      display: flex;
+      flex-direction: row;
+      gap: 8px;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: nowrap;
     }
   </style>
 </head>
 
 <body class="min-h-screen flex items-center justify-center p-4">
 
-  <div class="w-full max-w-md bg-slate-800 rounded-xl p-6 shadow-xl">
-    <h1 class="text-2xl font-bold text-center mb-4">🎰 ماكينة الحظ</h1>
+<div class="w-full max-w-md bg-slate-800 rounded-xl p-6 shadow-xl">
+  <h1 class="text-2xl font-bold text-center mb-4">🎰 ماكينة الحظ</h1>
 
-    <!-- القوائم -->
-    <div id="lists" class="space-y-3"></div>
+  <!-- القوائم -->
+  <div id="lists" class="space-y-3"></div>
 
-    <div class="flex gap-2 mt-3">
-      <button onclick="addList()" class="flex-1 bg-emerald-600 py-2 rounded font-bold">
-        ➕ إضافة قائمة
-      </button>
-      <button onclick="removeList()" class="flex-1 bg-rose-600 py-2 rounded font-bold">
-        ➖ حذف قائمة
-      </button>
-    </div>
-
-    <!-- زر التشغيل -->
-    <button onclick="spin()" class="w-full mt-4 bg-blue-600 hover:bg-blue-700 py-2 rounded font-bold">
-      🎲 لفّ الماكينة
+  <div class="flex gap-2 mt-3">
+    <button onclick="addList()" class="flex-1 bg-emerald-600 py-2 rounded font-bold">
+      ➕ إضافة قائمة
     </button>
-
-    <button onclick="resetAll()" class="w-full mt-2 bg-slate-600 hover:bg-slate-700 py-2 rounded font-bold">
-      ♻️ مسح كل القوائم
+    <button onclick="removeList()" class="flex-1 bg-rose-600 py-2 rounded font-bold">
+      ➖ حذف قائمة
     </button>
-
-    <!-- إطار الماكينة -->
-    <div class="mt-6 p-3 rounded-xl bg-slate-900 border-4 border-slate-700">
-      <div
-        id="result"
-        class="grid gap-2 text-center font-bold"
-        style="grid-auto-flow: column; grid-auto-columns: 1fr;"
-      ></div>
-    </div>
   </div>
 
+  <button onclick="spin()" class="w-full mt-4 bg-blue-600 py-2 rounded font-bold">
+    🎲 لفّ الماكينة
+  </button>
+
+  <!-- إطار الماكينة -->
+  <div class="machine-frame mt-6">
+    <div id="result" class="reels"></div>
+  </div>
+</div>
+
 <script>
-/* =======================
-   إدارة القوائم
-======================= */
 let listsCount = 0;
 const listsContainer = document.getElementById('lists');
+const resultBox = document.getElementById('result');
 
 function createList(value = '') {
   listsCount++;
-  const textarea = document.createElement('textarea');
-  textarea.className = 'w-full p-2 rounded text-black';
-  textarea.placeholder = `القائمة رقم ${listsCount} (كل عنصر في سطر)`;
-  textarea.value = value;
-  textarea.addEventListener('input', saveLists);
-  listsContainer.appendChild(textarea);
+  const ta = document.createElement('textarea');
+  ta.className = 'w-full p-2 rounded text-black';
+  ta.placeholder = `القائمة رقم ${listsCount} (كل عنصر في سطر)`;
+  ta.value = value;
+  ta.addEventListener('input', saveLists);
+  listsContainer.appendChild(ta);
 }
 
 function addList() {
@@ -116,8 +112,8 @@ function removeList() {
 }
 
 function saveLists() {
-  const values = [...listsContainer.children].map(t => t.value);
-  localStorage.setItem('lists', JSON.stringify(values));
+  const data = [...listsContainer.children].map(t => t.value);
+  localStorage.setItem('lists', JSON.stringify(data));
 }
 
 function loadLists() {
@@ -129,15 +125,10 @@ function loadLists() {
   }
 }
 
-/* =======================
-   اللف (Slot Effect)
-======================= */
 function spin() {
-  const textareas = [...listsContainer.children];
-  const resultBox = document.getElementById('result');
   resultBox.innerHTML = '';
 
-  textareas.forEach((ta, index) => {
+  [...listsContainer.children].forEach((ta, index) => {
     const slot = document.createElement('div');
     slot.className = 'slot';
     slot.textContent = '—';
@@ -148,39 +139,16 @@ function spin() {
 
     const interval = setInterval(() => {
       slot.textContent = items[Math.floor(Math.random() * items.length)];
-    }, 100);
+    }, 90);
 
     setTimeout(() => {
       clearInterval(interval);
       slot.textContent = items[Math.floor(Math.random() * items.length)];
-      slot.classList.add('final');
     }, 1200 + index * 300);
   });
 }
 
-/* =======================
-   Reset
-======================= */
-function resetAll() {
-  if (!confirm('هل أنت متأكد من مسح كل القوائم؟')) return;
-  localStorage.removeItem('lists');
-  listsContainer.innerHTML = '';
-  listsCount = 0;
-  createList();
-  document.getElementById('result').innerHTML = '';
-}
-
-/* =======================
-   تحميل عند الفتح
-======================= */
 loadLists();
-
-/* =======================
-   Service Worker
-======================= */
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js');
-}
 </script>
 
 </body>
